@@ -4,7 +4,7 @@ import pprint
 import datetime
 
 from services.elasticsearch import ElasticSearchIndex, ElasticSearchFactory
-from conf.elasticsearch_mapper2 import daily_bucket_storageclass_size_mapping
+from conf.elasticsearch_mapper import daily_bucket_storageclass_size_mapping
 
 # boto3.set_stream_logger('', 10)
 

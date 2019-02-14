@@ -4,7 +4,7 @@ import pprint
 from datetime import datetime
 
 from services.elasticsearch import ElasticSearchIndex, ElasticSearchFactory
-from conf.elasticsearch_mapper2 import daily_bucket_storageclass_size_mapping
+from conf.elasticsearch_mapper_old import daily_bucket_storageclass_size_mapping
 
 # Create S3 resource
 # s3 = boto3.resource('s3')

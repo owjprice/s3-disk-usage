@@ -2,6 +2,7 @@
 import boto3
 import pprint
 import datetime
+import json
 
 from services.elasticsearch import ElasticSearchIndex, ElasticSearchFactory
 from conf.elasticsearch_mapper import daily_bucket_storageclass_size_mapping
@@ -82,7 +83,7 @@ startTime = datetime.datetime.combine(datetime.date.today(), datetime.time())
 endTime = datetime.datetime.combine(datetime.date.today()+datetime.timedelta(1), datetime.time())
 
 def metric_crawler():
-
+    to_be_written = []
     for bucket in s3.buckets.all():
         to_be_indexed = {}
         print('Crawling bucket: ' + bucket.name)
@@ -107,6 +108,9 @@ def metric_crawler():
                 Unit='Bytes'
             )
             for data in response['Datapoints']:
+
+                # pp.pprint(data['Timestamp'].isoformat())
+
                 to_be_indexed['bucket_name'] = bucket.name
                 to_be_indexed['storage_class'] = item['StorageClass']
                 to_be_indexed['date'] = data['Timestamp'].isoformat()
@@ -115,16 +119,11 @@ def metric_crawler():
                     'display_name': bucket.Acl().owner['DisplayName'],
                     'id': bucket.Acl().owner['ID']
                 }
-                if not indexer.index(to_be_indexed):
-                    print('Something went wrong inserting into Elasticsearch')
+                to_be_written.append(to_be_indexed)
+                # pp.pprint(to_be_written)
+    with open('result.json', 'w') as fp:
+        json.dump(to_be_written, fp)
         
 
 if __name__ == '__main__':
     metric_crawler()
-    # for i in range(15):
-    #     print(i)
-    #     startTime = datetime.datetime.combine(datetime.date.today()-datetime.timedelta(i), datetime.time())
-    #     endTime = datetime.datetime.combine(datetime.date.today()-datetime.timedelta(i-1), datetime.time())
-    #     print(startTime)
-    #     print(endTime)
-    #     metric_crawler()
